@@ -1,0 +1,10 @@
+.idea
+*.iml
+# Maven generated output
+target
+# Eclipse generated
+.project
+.classpath
+.settings
+# Release plugin
+/data.txt

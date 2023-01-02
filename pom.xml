@@ -8,8 +8,8 @@
     <version>7</version>
   </parent>
 
-  <groupId>org.shelajev.maven.profiler</groupId>
-  <artifactId>maven-profiler</artifactId>
+  <groupId>io.github.shelajev</groupId>
+  <artifactId>maven-profiler-extension</artifactId>
 
   <version>0.0.1-SNAPSHOT</version>
   <name>Maven :: Profiler</name>

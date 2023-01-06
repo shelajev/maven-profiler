@@ -58,7 +58,6 @@ public class BuildProfiler extends AbstractEventSpy {
 
   @Override
   public void onEvent(Object event) throws Exception {
-
   }
 
 

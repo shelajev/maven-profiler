@@ -4,30 +4,37 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.lang.management.ManagementFactory;
 import java.nio.file.Paths;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 import org.apache.maven.eventspy.AbstractEventSpy;
 
 import org.apache.maven.eventspy.EventSpy;
+import org.apache.maven.execution.ExecutionEvent;
 import org.codehaus.plexus.component.annotations.Component;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.startupcheck.OneShotStartupCheckStrategy;
 import org.testcontainers.images.builder.ImageFromDockerfile;
 import org.testcontainers.utility.MountableFile;
 
+import org.apache.maven.execution.ExecutionEvent.Type;
+
+import static org.apache.maven.execution.ExecutionEvent.Type.MojoStarted;
+
 @Component(role = EventSpy.class)
 public class BuildProfiler extends AbstractEventSpy {
   public static final String PATHNAME = "data.txt";
+  public static final String PHASES_PATHNAME = "phases.txt";
 
   private final Timer scheduler = new Timer();
   private final com.sun.management.OperatingSystemMXBean bean;
-  private PrintWriter out;
+  private PrintWriter dataFile;
+  private PrintWriter lifecycleFile;
 
   public BuildProfiler() {
     this.bean = (com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
     try {
-      out = new PrintWriter(new File(PATHNAME));
+      dataFile = new PrintWriter(new File(PATHNAME));
+      lifecycleFile = new PrintWriter(new File(PHASES_PATHNAME));
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
@@ -51,21 +58,38 @@ public class BuildProfiler extends AbstractEventSpy {
         double usedMem = 1.0 - (bean.getFreeMemorySize() * 1.0 / bean.getTotalMemorySize());
 
         long ms = System.currentTimeMillis();
-        out.println("%s %f %f".formatted(ms, cpuLoad, usedMem));
+        dataFile.println("%s %f %f".formatted(ms, cpuLoad, usedMem));
       }
     }, 10, 300);
   }
 
+
+  private Set<String> phases = new HashSet<>();
+
   @Override
   public void onEvent(Object event) throws Exception {
+//    System.out.println("Oleg Oleg Oleg: event = " + event.toString());
+    if(event instanceof ExecutionEvent) {
+      ExecutionEvent executionEvent = (ExecutionEvent) event;
+      Type type = executionEvent.getType();
+      if(MojoStarted == type) {
+        String phase = executionEvent.getMojoExecution().getLifecyclePhase();
+        if(phase != null) {
+          long ms = System.currentTimeMillis();
+          lifecycleFile.println("%s %s".formatted(ms, phase));
+        }
+      }
+    }
   }
 
 
     @Override
   public void close() {
     scheduler.cancel();
-    out.flush();
-    out.close();
+    dataFile.flush();
+    dataFile.close();
+    lifecycleFile.flush();
+    lifecycleFile.close();
 
     GenericContainer<?> plotille = new GenericContainer<>(
       new ImageFromDockerfile("maven-profiler-plotille").withDockerfile(Paths.get(MountableFile.forClasspathResource("Dockerfile").getResolvedPath())))
@@ -74,6 +98,8 @@ public class BuildProfiler extends AbstractEventSpy {
         "/graph.py")
       .withCopyFileToContainer(MountableFile.forHostPath(PATHNAME),
         "/data.txt")
+      .withCopyFileToContainer(MountableFile.forHostPath(PHASES_PATHNAME),
+        "/phases.txt")
       .withStartupCheckStrategy(new OneShotStartupCheckStrategy());
 
     plotille.start();

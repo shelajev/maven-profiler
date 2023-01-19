@@ -10,6 +10,9 @@
 
   <groupId>io.github.shelajev</groupId>
   <artifactId>maven-profiler-extension</artifactId>
+  <version>0.0.4-SNAPSHOT</version>
+  <inceptionYear>2023</inceptionYear>
+  <name>Maven profiler extension</name>
 
   <licenses>
     <license>
@@ -29,7 +32,7 @@
   <developers>
     <developer>
       <id>oleg</id>
-      <name>Oleg Šelajev</name>
+      <name>Oleg Selajev</name>
     </developer>
   </developers>
 
@@ -71,9 +74,9 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.10.1</version>
         <configuration>
-          <source>19</source>
-          <target>19</target>
-          <release>19</release>
+          <source>17</source>
+          <target>17</target>
+          <release>17</release>
         </configuration>
       </plugin>
       <plugin>
@@ -106,8 +109,8 @@
                     <active>ALWAYS</active>
                     <url>https://s01.oss.sonatype.org/service/local</url>
                     <snapshotUrl>https://s01.oss.sonatype.org/content/repositories/snapshots/</snapshotUrl>
-                    <closeRepository>false</closeRepository>
-                    <releaseRepository>false</releaseRepository>
+                    <closeRepository>true</closeRepository>
+                    <releaseRepository>true</releaseRepository>
                     <stagingRepositories>target/staging-deploy</stagingRepositories>
                   </maven-central>
                 </nexus2>

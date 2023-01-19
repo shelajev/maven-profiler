@@ -1,0 +1,3 @@
+<extensions>
+<!--    mvn -Ppublication deploy -DaltDeploymentRepository=local::file:./target/staging-deploy-->
+</extensions>

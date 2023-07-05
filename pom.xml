@@ -13,6 +13,7 @@
   <version>0.0.5-SNAPSHOT</version>
   <inceptionYear>2023</inceptionYear>
   <name>Maven profiler extension</name>
+  <description>Maven profiler printing the CPU and memory of the build</description>
 
   <licenses>
     <license>
@@ -94,7 +95,7 @@
       <plugin>
         <groupId>org.jreleaser</groupId>
         <artifactId>jreleaser-maven-plugin</artifactId>
-        <version>1.4.0</version>
+        <version>1.7.0</version>
         <configuration>
           <projectCopyright>Oleg Šelajev</projectCopyright>
           <jreleaser>
@@ -125,6 +126,9 @@
   <profiles>
     <profile>
       <id>publication</id>
+      <properties>
+        <altDeploymentRepository>local::file:./target/staging-deploy</altDeploymentRepository>
+      </properties>
       <build>
         <plugins>
           <plugin>

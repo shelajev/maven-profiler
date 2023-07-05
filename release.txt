@@ -1,0 +1,1 @@
+mvn -Ppublication deploy jreleaser:deploy

@@ -10,10 +10,11 @@
 
   <groupId>io.github.shelajev</groupId>
   <artifactId>maven-profiler-extension</artifactId>
-  <version>0.0.5-SNAPSHOT</version>
+  <version>0.0.5</version>
   <inceptionYear>2023</inceptionYear>
   <name>Maven profiler extension</name>
   <description>Maven profiler printing the CPU and memory of the build</description>
+  <url>https://github.com/shelajev/maven-profiler/</url>
 
   <licenses>
     <license>

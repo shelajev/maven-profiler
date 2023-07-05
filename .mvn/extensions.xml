@@ -1,3 +1,7 @@
 <extensions>
-<!--    mvn -Ppublication deploy -DaltDeploymentRepository=local::file:./target/staging-deploy-->
+    <extension>
+        <groupId>io.github.shelajev</groupId>
+        <artifactId>maven-profiler-extension</artifactId>
+        <version>0.0.4-SNAPSHOT</version>
+    </extension>
 </extensions>

@@ -18,6 +18,7 @@ times = np.array(list(map(ms2datetime, times)))
 
 fig = Figure()
 fig.interp = 'Linear'
+fig.width = 160
 fig.set_y_limits(min_=0, max_=1)
 # fig.color_mode = 'byte'
 

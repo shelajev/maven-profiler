@@ -6,11 +6,15 @@ import java.lang.management.ManagementFactory;
 import java.nio.file.Paths;
 import java.util.*;
 
+import com.github.dockerjava.api.DockerClient;
+import com.github.dockerjava.api.command.InfoCmd;
+import com.github.dockerjava.api.model.Info;
 import org.apache.maven.eventspy.AbstractEventSpy;
 
 import org.apache.maven.eventspy.EventSpy;
 import org.apache.maven.execution.ExecutionEvent;
 import org.codehaus.plexus.component.annotations.Component;
+import org.testcontainers.DockerClientFactory;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.startupcheck.OneShotStartupCheckStrategy;
 import org.testcontainers.images.builder.ImageFromDockerfile;
@@ -20,7 +24,12 @@ import org.apache.maven.execution.ExecutionEvent.Type;
 
 import static org.apache.maven.execution.ExecutionEvent.Type.MojoStarted;
 
-@Component(role = EventSpy.class)
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+
+@Named
+@Singleton
 public class BuildProfiler extends AbstractEventSpy {
   public static final String PATHNAME = "data.txt";
   public static final String PHASES_PATHNAME = "phases.txt";
@@ -30,6 +39,7 @@ public class BuildProfiler extends AbstractEventSpy {
   private PrintWriter dataFile;
   private PrintWriter lifecycleFile;
 
+  @Inject
   public BuildProfiler() {
     this.bean = (com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
     try {
@@ -44,6 +54,13 @@ public class BuildProfiler extends AbstractEventSpy {
   public void init(Context context)
     throws Exception {
     super.init(context);
+
+    DockerClient dockerClient = DockerClientFactory.lazyClient();
+    InfoCmd infoCmd = dockerClient.infoCmd();
+    Info exec = infoCmd.exec();
+    System.out.println(exec.toString());
+
+
     double[] lastCPU = new double[1];
     scheduler.scheduleAtFixedRate(new TimerTask() {
       @Override
@@ -68,7 +85,7 @@ public class BuildProfiler extends AbstractEventSpy {
 
   @Override
   public void onEvent(Object event) throws Exception {
-//    System.out.println("Oleg Oleg Oleg: event = " + event.toString());
+    System.out.println(event.toString());
     if(event instanceof ExecutionEvent) {
       ExecutionEvent executionEvent = (ExecutionEvent) event;
       Type type = executionEvent.getType();
